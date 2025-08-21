@@ -60,14 +60,22 @@ df.show()
 # DBTITLE 1,Concatenating values from multiple columns
 from pyspark.sql.functions import col, concat, lit
 
-df.select(?).show()
+df.select(
+    col('id'),
+    'f_name',
+    'l_name',
+    concat(col('f_name'), lit(', '), col('l_name')).alias('full_name')
+).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Changing Date Format
 from pyspark.sql.functions import date_format
 
-temp_df = df.select(?)
+temp_df = df.selected(col('id'),
+                      date_format('customer_from', 'yyyy-MM-dd').alias('cust_start_date')
+                      )
+
 temp_df.show()
 
 # COMMAND ----------
@@ -78,25 +86,30 @@ temp_df.show()
 # COMMAND ----------
 
 # DBTITLE 1,Separating Date components
-customer_data = df.select(?)
+customer_data = df.select(col('id'),
+                    date_format('customer_from', 'yyyy').cast('int')alias('year'),
+                    date_format('customer_from', 'MM').cast('int')alias('month'),
+                    date_format('customer_from', 'dd').cast('int')alias('date')
+                    )
+
 customer_data.show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Manipulation on Numeric column
-?
+df.selected(col('amount_paid'), (col('amount_paid')*1000).alias('amount_paid_in_usd')).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,withColumn() example
-df.select('id', 'f_name', 'l_name').?
+df.select('id', 'f_name', 'l_name').withColumn('full_name', concat(col('f_name'), lit(', '), col('l_name'))).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,withColumnRenamed() Example 1
 #renaming a single column
 
-df.select('id', 'f_name', 'l_name').?
+df.select('id', 'f_name', 'l_name').withColumnRenamed('id', 'user_id').show()
 
 # COMMAND ----------
 
@@ -104,14 +117,21 @@ df.select('id', 'f_name', 'l_name').?
 # renaming multiple columns
 
 (
-    ?
+    df.select('id', 'f_name', 'l_name')
+    .withColumnRenamed('id', 'user_id')
+    .withColumnRenamed('f_name','first_name')
+    .withColumnRenamed('l_name','last_name')
     .show()
 )
 
 # COMMAND ----------
 
 # DBTITLE 1,Renaming the columns and expressions using alias
-df.select(?).show()
+df.select(
+    col('id').alias('user_id'),
+    col('f_name').alias('first_name'),
+    col('l_name').alias('last_name')
+).show()
 
 # COMMAND ----------
 
@@ -122,7 +142,7 @@ df.printSchema()
 # DBTITLE 1,Applying size on Arraytype
 from pyspark.sql.functions import size
 
-df.select('id', 'courses').?).show()
+df.select('id', 'courses').withColumn('course_count', size('courses')).show()
 
 # COMMAND ----------
 
@@ -148,14 +168,16 @@ from pyspark.sql import functions as F
 # no error but doesn't work
 # understanding role of col
 
-emp_df.?.show()
+emp_df.withColumn('bonus', 'salary'* F.lit(0.2)).show()
+
+
 
 # COMMAND ----------
 
 # DBTITLE 1,20% Hike in Salary: Correct way
 # this will work
 
-emp_df.?.show()
+emp_df.withColumn('bonus', F.col('salary')* F.lit(0.2)).show()
 
 # COMMAND ----------
 
@@ -169,7 +191,7 @@ emp_df.?.show()
 # mentioned column name in withColumn is same as original column name
 # it will overright orignal column in the dataframe
 
-emp_df.?.show()
+emp_df.withColumn('nationality', F.lower('nationality').show()
 
 # COMMAND ----------
 
@@ -177,34 +199,35 @@ emp_df.?.show()
 # using upper() function
 # creating new column
 
-emp_df.?.show()
+emp_df.withColumn('update_nationality', F.upper('nationality')).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Initcap
-emp_df.?.show()
+emp_df.withColumn('nationality', F.initcap('nationality')).show() 
+#capitalizes first letter
 
 # COMMAND ----------
 
 # DBTITLE 1,Length
-emp_df.?.show()
+emp_df.withColumn('len', F.length('nationality')).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Substring
-emp_df.?.show()
+emp_df.withColumn('short_name', F.substring('f_name', 1,4)).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Split
-emp_df.?.show()
+emp_df.withColumn('ssn_componenet', F.substring('ssn', ' ')).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,What are the components?
 # split results in Array type column
 
-emp_df.?.printSchema()
+emp_df.withColumn('ssn_component', F.split('ssn', ' ').printSchema()
 
 # COMMAND ----------
 
