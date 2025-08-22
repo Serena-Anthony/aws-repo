@@ -74,66 +74,66 @@ users_df.show()
 # COMMAND ----------
 
 # DBTITLE 1,sort() function
-help(?)
+help(users_df.sort)
+#default is ascending
 
 # COMMAND ----------
 
 # DBTITLE 1,orderBy() function
-help(?)
+help(users_df.orderBy)
 
 # COMMAND ----------
 
 # DBTITLE 1,Sorting in ascending order
 # sord the data in ascending order by first_name
 
-users_df.?.show()
+users_df.sort("first_name").show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Sorting is Descending Order
 # sord the data in descending order by first_name
 
-users_df.?.show()
+users_df.sort("first_name", ascending=False).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Sorting based on function output (ascending)
 # sord the data in ascending order by number of courses enrolled
 
-users_df.?.show()
+users_df.sort(F.size('courses')).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Sorting based on function output (descending)
 # sord the data in descending order by number of courses enrolled
 
-users_df.?.show()
+users_df.sort(F.size('courses').desc()).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Dealing with null: Null in beginning and then Asc sorting
-users_df.?.show() # default behaviour
+users_df.sort(F.col('customer_from').asc_nulls_first()).show() # default behaviour
 
 # COMMAND ----------
 
 # DBTITLE 1,Dealing with null: Null in end and then Asc sorting
 # dealing with null
 
-users_df.?.show()
+users_df.sort(F.col('customer_from').asc_nulls_last()).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Dealing with null: Null in beginning and then Desc sorting
 # dealing with null
-
-users_df.?.show()
+users_df.sort(F.col('customer_from').desc_nulls_first()).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Dealing with null: Null in end and then Asc sorting
 # dealing with null
 
-users_df.?.show() # default behaviour
+users_df.sort(F.col('customer_from').desc_nulls_last()).show() # default behaviour
 
 # COMMAND ----------
 
@@ -280,52 +280,55 @@ courses_df.show()
 # DBTITLE 1,Sorting by multiple columns in Asc order
 # sort in ascending order of 'suitable_for' and 'enrollment'
 
-courses_df.?.show()
+courses_df.sort('suitable_for', 'enrollment').show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Just Another way
-courses_df.?.show()
+courses_df.sort(['suitable_for', 'enrollment']).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Sorting by multiple columns in mixed order
 # sort in asceding order by 'suitable_for' and then in descending order  by 'number_of_ratings'
 
-courses_df.?.show()
+courses_df.sort(courses_df['suitable_for'], courses_df['number_of_ratings'].desc()).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Just Another Way
 # sort in asceding order by 'suitable_for' and then in descending order  by 'number_of_ratings'
 
-courses_df.?.show()
+courses_df.sort('suitable_for', F.desc('number_of_ratings')).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,One More Way
 # sort in asceding order by 'suitable_for' and then in descending order  by 'number_of_ratings'
 
-courses_df.?.show()
+courses_df.sort(['suitable_for','number_of_ratings'], ascending=[True, False]).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,What is when() function
 # prioritized sorting of saprk data frame (custom logic)
 
-help(?)
+help(F.when)
 
 # COMMAND ----------
 
 # DBTITLE 1,when-otherwise to create column with custom logic
-course_level = ?
-
+course_level = F.when(F.col('suitable_for') == 'Beginner', 0) \
+                .otherwise( F.when(F.col('suitable_for') == 'Intermediate', 1)\
+                    .otherwise(2) )
+                    
+courses_df.select('suitable_for','course_name', course_level.alias('lvl')).sort('lvl').show()
 type(course_level)
 
 # COMMAND ----------
 
 # DBTITLE 1,Sorting according to course_level (custom logic)
-courses_df.?.show()
+courses_df.orderBy(course_level, F.col('number_of_ratings').desc()).show()
 
 # COMMAND ----------
 
