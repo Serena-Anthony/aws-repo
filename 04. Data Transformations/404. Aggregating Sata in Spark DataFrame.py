@@ -36,14 +36,15 @@ emp_df.select(F.count('*')).show()
 # COMMAND ----------
 
 # DBTITLE 1,Grouped aggregation or by-key aggregation
-emp_df.?.show()  
+emp_df.filter('sal> 1000').groupBy('deptno').agg(F.count('*')).show()  
+#filter v cn use b4 group by like where in sql
 
 # COMMAND ----------
 
 # DBTITLE 1,Filter, select, aggregation, alias
 # get salary summation for a given deptno
 
-emp_df.?.show()
+emp_df.filter('deptno = 10').select(F.sum('sal').alias('tot_sal_dep_10')).show()
 
 # COMMAND ----------
 
@@ -55,10 +56,32 @@ emp_df.?.show()
 
 # DBTITLE 1,groupBy and agg
 # get department wise summary
-?
+emp_df.groupBy('deptno').agg(F.count('*')).show()
 
 # COMMAND ----------
 
 # MAGIC
 # MAGIC %md
 # MAGIC ===================================== END ========================================
+
+# COMMAND ----------
+
+# avg sal for managers ?
+# how many ppl joined aftr 31st dec 1981 
+# get the count of ppl & total sal paid, deptwise-jobwise
+
+# COMMAND ----------
+
+emp_df.where('job = "MANAGER"').select(F.sum('sal')).show()
+
+# COMMAND ----------
+
+emp_df.where(F.col('hiredate') > datetime.date(1981, 12, 31)).select(F.count('*')).show()
+
+# COMMAND ----------
+
+emp_df.groupBy('deptno', 'job').agg(F.count('*'), F.sum('sal')).show()
+
+# COMMAND ----------
+
+

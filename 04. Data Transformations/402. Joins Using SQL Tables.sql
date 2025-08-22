@@ -13,11 +13,8 @@ DROP TABLE IF EXISTS brands;
 -- COMMAND ----------
 
 -- DBTITLE 1,See Available Databases
--- MAGIC %python
--- MAGIC
--- MAGIC df = ?
--- MAGIC df.printSchema()
--- MAGIC df.show()
+
+show databases;
 
 -- COMMAND ----------
 
@@ -27,21 +24,23 @@ DROP TABLE IF EXISTS brands;
 -- COMMAND ----------
 
 -- DBTITLE 1,Get the list of Tables and views in default Database
-?
+show tables;
 
 -- COMMAND ----------
 
 -- DBTITLE 1,Create Tables in default database
 -- it will be managed table, not external table (we will discuss more about them during unity catalog)
 
-?
+create table products(product_id int, product_name string, brand_id int);
 
-?
+create table brands(brand_id int , brand_name string);
+
+
 
 -- COMMAND ----------
 
 -- DBTITLE 1,Confirm Table creation
-?
+show tables;
 
 -- COMMAND ----------
 
@@ -61,13 +60,19 @@ INSERT INTO brands VALUES (100, "Apple"),
 
 -- COMMAND ----------
 
+select * from brands
+
+-- COMMAND ----------
+
 -- DBTITLE 1,Create temp views from DFs created in above cell
-?
+create or replace temporary view brand_500
+as
+select * from brands where brand_id = '500';
 
 -- COMMAND ----------
 
 -- DBTITLE 1,See brands table
-?
+select * from brand_500;
 
 -- COMMAND ----------
 
@@ -86,42 +91,49 @@ INSERT INTO brands VALUES (100, "Apple"),
 -- COMMAND ----------
 
 -- DBTITLE 1,Inner join in SQL
-?
+select products.*, brands.* from products inner join brands
+on products.brand_id = brands.brand_id ;
 
 -- COMMAND ----------
 
 -- DBTITLE 1,Inner join is Default Join
-?
+select products.*, brands.* from products join brands
+on products.brand_id = brands.brand_id ;
 
 -- COMMAND ----------
 
 -- DBTITLE 1,Full Outer Join
-?
+select products.*, brands.* from products full outer join brands
+on products.brand_id = brands.brand_id ;
 
 -- COMMAND ----------
 
 -- DBTITLE 1,Left Outer join
-?
+select products.*, brands.* from products left outer join brands
+on products.brand_id = brands.brand_id ;
 
 -- COMMAND ----------
 
 -- DBTITLE 1,Right outer join
-?
+select products.*, brands.* from products right outer join brands
+on products.brand_id = brands.brand_id ;
 
 -- COMMAND ----------
 
 -- DBTITLE 1,Left Semi Join
-?
+select products.*from products left semi join brands
+on products.brand_id = brands.brand_id ;
 
 -- COMMAND ----------
 
 -- DBTITLE 1,Left Anti Join
-?
+select products.* from products left anti join brands
+on products.brand_id = brands.brand_id ;
 
 -- COMMAND ----------
 
 -- DBTITLE 1,Cross join
-?
+select products.*, brands.* from products cross join brands ;
 
 -- COMMAND ----------
 

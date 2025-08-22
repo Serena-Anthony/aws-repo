@@ -27,12 +27,12 @@ emp_df.show()
 # COMMAND ----------
 
 # DBTITLE 1,What is filter function?
-help(?)
+help(emp_df.filter)
 
 # COMMAND ----------
 
 # DBTITLE 1,What is where() function
-help(?)
+help(emp_df.where)
 
 # it is an alias for filter function
 
@@ -44,51 +44,56 @@ from pyspark.sql import functions as F
 # COMMAND ----------
 
 # DBTITLE 1,Filter: using col function
-emp_df.?.show()
+emp_df.filter(F.col('empno') == 7839).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Filter: using column name reference
-emp_df.?.show()
+emp_df.where(F.col('empno') == 7839).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Where: using col function
-emp_df.?.show()
+emp_df.where(emp_df['empno'] == 7839).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Where: using column name reference
-emp_df.?.show()
+emp_df.where(F.col('empno') == 7839).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Filter: Condition as an argument in form of string
-emp_df.?.show()
+emp_df.filter('empno= 7839').show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Where: Condition as an argument in form of string
-emp_df.?.show()
+emp_df.where('empno= 7839').show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Creating view
-emp_df.?
+emp_df.createOrReplaceTempView('emp')
 
 # COMMAND ----------
 
 # DBTITLE 1,Spark SQL
 # equivalent spark sql statement on the view for above operations
-
-?
+spark.sql(
+  '''
+  select * 
+  from emp
+  where empno = 7839
+  '''
+).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,SQL Query
 # MAGIC %sql
 # MAGIC
-# MAGIC ?
+# MAGIC select * from emp where empno= 7839;
 
 # COMMAND ----------
 
@@ -100,73 +105,91 @@ emp_df.?
 # COMMAND ----------
 
 # DBTITLE 1,Condition on string column
-## string values are case sensitive
+## string values are CASE sensitive
 
-?
+emp_df.filter(F.col('ename') == 'ALLEN').show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Condition on numeric column
-?
-
+emp_df.filter(F.col('sal') > '2000').show()
 # Try this : it also works
-# emp_df.filter(F.col('sal') > 2000).show()
+emp_df.filter(F.col('sal') > 2000).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Non equality
-?
+emp_df.filter(F.col('sal') != '2000').show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Multiple conditions
-emp_df.filter(?).show()
+emp_df.filter((F.col('deptno') == 10 )| (F.col('job') == 'MANAGER')).show()
+
+# COMMAND ----------
+
+emp_df.filter((F.col('deptno') == 10 ) & (F.col('job') == 'MANAGER')).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,SQL syntax for multiple conditions
-emp_df.filter(?).show()
+emp_df.filter("deptno == 10  or job == 'MANAGER'").show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Condition with null
-emp_df.filter(?).show()
+emp_df.filter(F.col('mgr').isNull()).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Condition with not null
-emp_df.filter(?).show()
+emp_df.filter(F.col('comm').isNotNull()).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Selecting specific columns
-emp_df.?.show()
+emp_df.select('empno','ename','sal').show()
 
 # COMMAND ----------
 
 # DBTITLE 1,Using select and filter together
 # between for range based filter
 
-emp_df.?.?.?.show()
+emp_df.select('empno','ename','sal').filter(F.col('sal').between(1500,2500)).show()
+
+# COMMAND ----------
+
+emp_df.createOrReplaceTempView('emp')
+
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC select deptno, min(sal) as lowest_sal from emp where job= 'MANAGER'
+# MAGIC group by deptno order by lowest_sal;
 
 # COMMAND ----------
 
 # DBTITLE 1,Just another syntax
-emp_df.?.?.show()
+emp_df.select('empno','ename','sal').filter('sal between 1500 and 2500').show()
+
+# COMMAND ----------
+
+emp_df.filter('sal between 1500 and 2500').select('empno','ename','sal').show()
 
 # COMMAND ----------
 
 # DBTITLE 1,isin()
 # Python way of doing it
 
-emp_df.?.show()
+emp_df.select('ename','deptno').filter(F.col('deptno').isin(10,20)).show()
 
 # COMMAND ----------
 
 # DBTITLE 1,in()
 # sql way of doing it
 
-emp_df.?.show()
+emp_df.select('ename','deptno').filter('deptno in (10,20)').show()
 
 # COMMAND ----------
 
