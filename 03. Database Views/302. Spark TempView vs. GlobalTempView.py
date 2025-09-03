@@ -52,8 +52,7 @@ storeDf.show()
 # DBTITLE 1,Creating another session
 # in any spark application, there will be ONLY ONE spark context but we can create as many spark sessions allowed
 
-?
-
+# spark2 = spark.newSession()
 
 # COMMAND ----------
 
@@ -69,7 +68,11 @@ storeDf.show()
 # COMMAND ----------
 
 # DBTITLE 1,See the available tables on session 1 (spark)
-?
+# List all tables in the current Spark session
+
+
+# tables = spark.catalog.listTables()
+# display(tables)
 
 # COMMAND ----------
 

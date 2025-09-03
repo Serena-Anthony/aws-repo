@@ -10,13 +10,19 @@ type(data)
 # DBTITLE 1,Creating DataFrame from list of list
 ## without schema specification
 
-df1 = ?
-df1.?
+df1 = spark.createDataFrame(data)
+df1.show()
+
+# COMMAND ----------
+
+type(df1)
 
 # COMMAND ----------
 
 # with schema specification
-
+schema=(
+    
+)
 df2 = ?
 df2.show()
 
